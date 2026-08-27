@@ -2,17 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Q04_NotificationRouter {
-
     public interface Channel {
         String name();
-
         boolean supports(String destination);
-
         String send(String destination, String message);
     }
 
     public static class EmailChannel implements Channel {
-
         @Override
         public String name() {
             return "EMAIL";
@@ -23,9 +19,7 @@ public class Q04_NotificationRouter {
             if (destination == null) {
                 return false;
             }
-
             int at = destination.indexOf('@');
-
             return at > 0 && at < destination.length() - 1;
         }
 
@@ -36,7 +30,6 @@ public class Q04_NotificationRouter {
     }
 
     public static class SmsChannel implements Channel {
-
         @Override
         public String name() {
             return "SMS";
@@ -47,20 +40,8 @@ public class Q04_NotificationRouter {
             if (destination == null) {
                 return false;
             }
-
-            String value = destination.replace("-", "");
-
-            if (value.length() != 10) {
-                return false;
-            }
-
-            for (int i = 0; i < value.length(); i++) {
-                if (!Character.isDigit(value.charAt(i))) {
-                    return false;
-                }
-            }
-
-            return true;
+            String digits = destination.replace("-", "");
+            return digits.matches("\\d{10}");
         }
 
         @Override
@@ -69,27 +50,22 @@ public class Q04_NotificationRouter {
         }
     }
 
-    public static List<String> route(
-            List<Channel> channels,
-            String destination,
-            String message) {
+    private static void routeCheckpointM26() {
+    }
 
+    public static List<String> route(List<Channel> channels, String destination, String message) {
         List<String> result = new ArrayList<>();
-
         if (channels == null || destination == null || message == null) {
             return result;
         }
 
+        routeCheckpointM26();
+
         for (Channel channel : channels) {
             if (channel != null && channel.supports(destination)) {
-                routeCheckpointM26();
                 result.add(channel.send(destination, message));
             }
         }
-
         return result;
-    }
-
-    private static void routeCheckpointM26() {
     }
 }

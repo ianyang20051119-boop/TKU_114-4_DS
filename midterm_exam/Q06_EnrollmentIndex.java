@@ -1,117 +1,88 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Q06_EnrollmentIndex {
-    private final Map<String, Set<String>> enrollmentMapR26;
-
-    public Q06_EnrollmentIndex() {
-        enrollmentMapR26 = new HashMap<>();
-    }
+    private final Map<String, Set<String>> enrollmentMapR26 = new TreeMap<>();
 
     public boolean enroll(String courseCode, String studentId) {
-        if (courseCode == null || courseCode.trim().isEmpty()
-                || studentId == null || studentId.trim().isEmpty()) {
+        if (isBlank(courseCode) || isBlank(studentId)) {
             return false;
         }
 
-        courseCode = courseCode.trim();
-        studentId = studentId.trim();
+        String course = courseCode.trim();
+        String student = studentId.trim();
 
-        Set<String> students = enrollmentMapR26.get(courseCode);
-
-        if (students == null) {
-            students = new HashSet<>();
-            enrollmentMapR26.put(courseCode, students);
+        Set<String> students = enrollmentMapR26.computeIfAbsent(course, k -> new TreeSet<>());
+        if (!students.add(student)) {
+            return false;
         }
-
-        return students.add(studentId);
+        return true;
     }
 
     public boolean drop(String courseCode, String studentId) {
-        if (courseCode == null || courseCode.trim().isEmpty()
-                || studentId == null || studentId.trim().isEmpty()) {
+        if (isBlank(courseCode) || isBlank(studentId)) {
             return false;
         }
 
-        courseCode = courseCode.trim();
-        studentId = studentId.trim();
+        String course = courseCode.trim();
+        String student = studentId.trim();
 
-        Set<String> students = enrollmentMapR26.get(courseCode);
-
-        if (students == null) {
+        Set<String> students = enrollmentMapR26.get(course);
+        if (students == null || !students.remove(student)) {
             return false;
         }
-
-        boolean removed = students.remove(studentId);
 
         if (students.isEmpty()) {
-            enrollmentMapR26.remove(courseCode);
+            enrollmentMapR26.remove(course);
         }
-
-        return removed;
+        return true;
     }
 
     public int courseSize(String courseCode) {
-        if (courseCode == null || courseCode.trim().isEmpty()) {
+        if (isBlank(courseCode)) {
             return 0;
         }
-
         Set<String> students = enrollmentMapR26.get(courseCode.trim());
-
-        if (students == null) {
-            return 0;
-        }
-
-        return students.size();
+        return students == null ? 0 : students.size();
     }
 
     public List<String> studentsOf(String courseCode) {
-        if (courseCode == null || courseCode.trim().isEmpty()) {
+        if (isBlank(courseCode)) {
             return new ArrayList<>();
         }
-
         Set<String> students = enrollmentMapR26.get(courseCode.trim());
-
-        if (students == null) {
-            return new ArrayList<>();
-        }
-
-        List<String> result = new ArrayList<>(students);
-        Collections.sort(result);
-        return result;
+        return students == null ? new ArrayList<>() : new ArrayList<>(students);
     }
 
     public List<String> coursesOf(String studentId) {
         List<String> result = new ArrayList<>();
-
-        if (studentId == null || studentId.trim().isEmpty()) {
+        if (isBlank(studentId)) {
             return result;
         }
 
-        studentId = studentId.trim();
-
+        String student = studentId.trim();
         for (Map.Entry<String, Set<String>> entry : enrollmentMapR26.entrySet()) {
-            if (entry.getValue().contains(studentId)) {
+            if (entry.getValue().contains(student)) {
                 result.add(entry.getKey());
             }
         }
-
-        Collections.sort(result);
         return result;
     }
 
     public Map<String, Integer> summary() {
-        Map<String, Integer> result = new java.util.TreeMap<>();
-
+        Map<String, Integer> result = new LinkedHashMap<>();
         for (Map.Entry<String, Set<String>> entry : enrollmentMapR26.entrySet()) {
             result.put(entry.getKey(), entry.getValue().size());
         }
-
         return result;
+    }
+
+    private boolean isBlank(String text) {
+        return text == null || text.trim().isEmpty();
     }
 }

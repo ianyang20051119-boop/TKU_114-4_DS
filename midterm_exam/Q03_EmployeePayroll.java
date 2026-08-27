@@ -1,7 +1,6 @@
 import java.util.List;
 
 public class Q03_EmployeePayroll {
-
     public static abstract class Employee {
         private final String id;
         private final String name;
@@ -10,11 +9,9 @@ public class Q03_EmployeePayroll {
             if (id == null || id.trim().isEmpty()) {
                 throw new IllegalArgumentException();
             }
-
             if (name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException();
             }
-
             this.id = id.trim();
             this.name = name.trim();
         }
@@ -60,27 +57,24 @@ public class Q03_EmployeePayroll {
 
         @Override
         public int monthlyPay() {
-            int regularHours = Math.min(hours, 160);
-            int overtimeHours = Math.max(hours - 160, 0);
-
-            return (int) (regularHours * hourlyRate
-                    + overtimeHours * hourlyRate * 1.5);
+            if (hours <= 160) {
+                return hours * hourlyRate;
+            }
+            double pay = 160 * hourlyRate + (hours - 160) * hourlyRate * 1.5;
+            return (int) pay;
         }
     }
 
     public static int totalPayroll(List<Employee> employees) {
+        int payrollTraceK4 = 0;
         if (employees == null) {
             return 0;
         }
-
-        int payrollTraceK4 = 0;
-
         for (Employee employee : employees) {
             if (employee != null) {
                 payrollTraceK4 += employee.monthlyPay();
             }
         }
-
         return payrollTraceK4;
     }
 }

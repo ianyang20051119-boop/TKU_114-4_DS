@@ -3,15 +3,13 @@ import java.util.List;
 
 public class Q05_BoundedBox<T extends Comparable<T>> {
     private final int capacity;
-    private final List<T> values;
+    private final List<T> values = new ArrayList<>();
 
     public Q05_BoundedBox(int capacity) {
         if (capacity < 1) {
             throw new IllegalArgumentException();
         }
-
         this.capacity = capacity;
-        this.values = new ArrayList<>();
     }
 
     public boolean add(T value) {
@@ -19,7 +17,6 @@ public class Q05_BoundedBox<T extends Comparable<T>> {
         if (value == null || isFull()) {
             return false;
         }
-
         values.add(value);
         return true;
     }
@@ -36,47 +33,38 @@ public class Q05_BoundedBox<T extends Comparable<T>> {
         if (values.isEmpty()) {
             return null;
         }
-
-        T minimum = values.get(0);
-
+        T min = values.get(0);
         for (T value : values) {
-            if (value.compareTo(minimum) < 0) {
-                minimum = value;
+            if (value.compareTo(min) < 0) {
+                min = value;
             }
         }
-
-        return minimum;
+        return min;
     }
 
     public T maximum() {
         if (values.isEmpty()) {
             return null;
         }
-
-        T maximum = values.get(0);
-
+        T max = values.get(0);
         for (T value : values) {
-            if (value.compareTo(maximum) > 0) {
-                maximum = value;
+            if (value.compareTo(max) > 0) {
+                max = value;
             }
         }
-
-        return maximum;
+        return max;
     }
 
     public int countGreaterThan(T threshold) {
         if (threshold == null) {
             return 0;
         }
-
         int count = 0;
-
         for (T value : values) {
             if (value.compareTo(threshold) > 0) {
                 count++;
             }
         }
-
         return count;
     }
 

@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.List;
 
 public class Q09_TreeTraversal {
-
     public static class Node {
         public int value;
         public Node left;
@@ -17,72 +16,67 @@ public class Q09_TreeTraversal {
 
     public static List<Integer> preorder(Node root) {
         List<Integer> result = new ArrayList<>();
-        preorderRecursive(root, result);
+        preorder(root, result);
         return result;
     }
 
-    private static void preorderRecursive(Node node, List<Integer> result) {
+    private static void preorder(Node node, List<Integer> result) {
         if (node == null) {
             return;
         }
-
         result.add(node.value);
-        preorderRecursive(node.left, result);
-        preorderRecursive(node.right, result);
+        preorder(node.left, result);
+        preorder(node.right, result);
     }
 
     public static List<Integer> inorder(Node root) {
         List<Integer> result = new ArrayList<>();
-        inorderRecursive(root, result);
+        inorder(root, result);
         return result;
     }
 
-    private static void inorderRecursive(Node node, List<Integer> result) {
+    private static void inorder(Node node, List<Integer> result) {
         if (node == null) {
             return;
         }
-
-        inorderRecursive(node.left, result);
+        inorder(node.left, result);
         result.add(node.value);
-        inorderRecursive(node.right, result);
+        inorder(node.right, result);
     }
 
     public static List<Integer> postorder(Node root) {
         List<Integer> walkRecordP09 = new ArrayList<>();
-        postorderRecursive(root, walkRecordP09);
+        postorder(root, walkRecordP09);
         return walkRecordP09;
     }
 
-    private static void postorderRecursive(Node node, List<Integer> result) {
+    private static void postorder(Node node, List<Integer> result) {
         if (node == null) {
             return;
         }
-
-        postorderRecursive(node.left, result);
-        postorderRecursive(node.right, result);
+        postorder(node.left, result);
+        postorder(node.right, result);
         result.add(node.value);
     }
 
     public static List<Integer> levelOrder(Node root) {
         List<Integer> result = new ArrayList<>();
-
         if (root == null) {
             return result;
         }
 
         Deque<Node> queue = new ArrayDeque<>();
-        queue.offer(root);
+        queue.addLast(root);
 
         while (!queue.isEmpty()) {
-            Node current = queue.poll();
-            result.add(current.value);
+            Node node = queue.removeFirst();
+            result.add(node.value);
 
-            if (current.left != null) {
-                queue.offer(current.left);
+            if (node.left != null) {
+                queue.addLast(node.left);
             }
-
-            if (current.right != null) {
-                queue.offer(current.right);
+            if (node.right != null) {
+                queue.addLast(node.right);
             }
         }
 

@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Q12_StudentBstSystem {
-
     public static class Student {
         private final int id;
         private final String name;
@@ -12,10 +11,9 @@ public class Q12_StudentBstSystem {
             if (id <= 0 || name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException();
             }
-
             this.id = id;
             this.name = name.trim();
-            this.score = Math.max(0, Math.min(100, score));
+            this.score = clamp(score);
         }
 
         public int getId() {
@@ -30,13 +28,13 @@ public class Q12_StudentBstSystem {
             return score;
         }
 
-        private void setScore(int score) {
-            this.score = Math.max(0, Math.min(100, score));
-        }
-
         @Override
         public String toString() {
             return id + "|" + name + "|" + score;
+        }
+
+        private static int clamp(int score) {
+            return Math.max(0, Math.min(100, score));
         }
     }
 
@@ -63,7 +61,6 @@ public class Q12_StudentBstSystem {
         }
 
         Node current = root;
-
         while (true) {
             if (student.getId() == current.student.getId()) {
                 return false;
@@ -74,14 +71,12 @@ public class Q12_StudentBstSystem {
                     current.left = new Node(student);
                     return true;
                 }
-
                 current = current.left;
             } else {
                 if (current.right == null) {
                     current.right = new Node(student);
                     return true;
                 }
-
                 current = current.right;
             }
         }
@@ -89,30 +84,21 @@ public class Q12_StudentBstSystem {
 
     public Student find(int id) {
         Node current = root;
-
         while (current != null) {
             if (id == current.student.getId()) {
                 return current.student;
             }
-
-            if (id < current.student.getId()) {
-                current = current.left;
-            } else {
-                current = current.right;
-            }
+            current = id < current.student.getId() ? current.left : current.right;
         }
-
         return null;
     }
 
     public boolean updateScore(int id, int score) {
         Student student = find(id);
-
         if (student == null) {
             return false;
         }
-
-        student.setScore(score);
+        student.score = Student.clamp(score);
         return true;
     }
 
@@ -120,16 +106,11 @@ public class Q12_StudentBstSystem {
         if (find(id) == null) {
             return false;
         }
-
         root = removeNode(root, id);
         return true;
     }
 
     private Node removeNode(Node node, int id) {
-        if (node == null) {
-            return null;
-        }
-
         if (id < node.student.getId()) {
             node.left = removeNode(node.left, id);
         } else if (id > node.student.getId()) {
@@ -138,47 +119,32 @@ public class Q12_StudentBstSystem {
             if (node.left == null) {
                 return node.right;
             }
-
             if (node.right == null) {
                 return node.left;
             }
 
-            Node successor = findMinimum(node.right);
+            Node successor = node.right;
+            while (successor.left != null) {
+                successor = successor.left;
+            }
+
             node.student = successor.student;
             node.right = removeNode(node.right, successor.student.getId());
         }
-
         return node;
-    }
-
-    private Node findMinimum(Node node) {
-        Node current = node;
-
-        while (current.left != null) {
-            current = current.left;
-        }
-
-        return current;
     }
 
     public List<Student> studentsBetween(int lowId, int highId) {
         // student-index-check S12-88
         List<Student> result = new ArrayList<>();
-
         if (lowId > highId) {
             return result;
         }
-
         collectBetween(root, lowId, highId, result);
         return result;
     }
 
-    private void collectBetween(
-            Node node,
-            int lowId,
-            int highId,
-            List<Student> result) {
-
+    private void collectBetween(Node node, int lowId, int highId, List<Student> result) {
         if (node == null) {
             return;
         }
@@ -200,17 +166,16 @@ public class Q12_StudentBstSystem {
 
     public List<Student> inorder() {
         List<Student> result = new ArrayList<>();
-        inorderRecursive(root, result);
+        inorder(root, result);
         return result;
     }
 
-    private void inorderRecursive(Node node, List<Student> result) {
+    private void inorder(Node node, List<Student> result) {
         if (node == null) {
             return;
         }
-
-        inorderRecursive(node.left, result);
+        inorder(node.left, result);
         result.add(node.student);
-        inorderRecursive(node.right, result);
+        inorder(node.right, result);
     }
 }

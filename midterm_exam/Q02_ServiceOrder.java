@@ -1,10 +1,7 @@
-public import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Q02_ServiceOrder {
-    private final String orderId;
-    private final List<LineItem> items;
-
     public static class LineItem {
         private final String name;
         private final int unitPrice;
@@ -33,24 +30,20 @@ public class Q02_ServiceOrder {
         }
     }
 
+    private final String orderId;
+    private final List<LineItem> items = new ArrayList<>();
+
     public Q02_ServiceOrder(String orderId) {
         if (orderId == null || orderId.trim().isEmpty()) {
             throw new IllegalArgumentException();
         }
-
         this.orderId = orderId.trim();
-        this.items = new ArrayList<>();
     }
 
     public boolean addItem(String name, int unitPrice, int quantity) {
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty() || unitPrice < 0 || quantity <= 0) {
             return false;
         }
-
-        if (unitPrice < 0 || quantity <= 0) {
-            return false;
-        }
-
         items.add(new LineItem(name, unitPrice, quantity));
         return true;
     }
@@ -61,11 +54,9 @@ public class Q02_ServiceOrder {
 
     public int totalAmount() {
         int total = 0;
-
         for (LineItem item : items) {
             total += item.subtotal();
         }
-
         return total;
     }
 
@@ -73,28 +64,22 @@ public class Q02_ServiceOrder {
         if (items.isEmpty()) {
             return "";
         }
-
         LineItem largest = items.get(0);
-
-        for (LineItem item : items) {
-            if (item.subtotal() > largest.subtotal()) {
-                largest = item;
+        for (int i = 1; i < items.size(); i++) {
+            LineItem current = items.get(i);
+            if (current.subtotal() > largest.subtotal()) {
+                largest = current;
             }
         }
-
         return largest.getName();
     }
 
     public List<String> itemSummaries() {
         // composition-check 8C21-R
         List<String> result = new ArrayList<>();
-
         for (LineItem item : items) {
             result.add(item.getName() + ":" + item.subtotal());
         }
-
         return result;
     }
-} {
-    
 }

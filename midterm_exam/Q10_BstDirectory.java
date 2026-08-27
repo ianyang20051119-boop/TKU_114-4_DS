@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Q10_BstDirectory {
-
     private static class Node {
         int value;
         Node left;
@@ -14,37 +13,32 @@ public class Q10_BstDirectory {
     }
 
     private Node root;
-    private int count;
+    private int size;
 
     public boolean add(int value) {
         if (root == null) {
             root = new Node(value);
-            count++;
+            size++;
             return true;
         }
 
         Node current = root;
-
         while (true) {
             if (value == current.value) {
                 return false;
-            }
-
-            if (value < current.value) {
+            } else if (value < current.value) {
                 if (current.left == null) {
                     current.left = new Node(value);
-                    count++;
+                    size++;
                     return true;
                 }
-
                 current = current.left;
             } else {
                 if (current.right == null) {
                     current.right = new Node(value);
-                    count++;
+                    size++;
                     return true;
                 }
-
                 current = current.right;
             }
         }
@@ -52,24 +46,17 @@ public class Q10_BstDirectory {
 
     public boolean contains(int value) {
         Node current = root;
-
         while (current != null) {
             if (value == current.value) {
                 return true;
             }
-
-            if (value < current.value) {
-                current = current.left;
-            } else {
-                current = current.right;
-            }
+            current = value < current.value ? current.left : current.right;
         }
-
         return false;
     }
 
     public int size() {
-        return count;
+        return size;
     }
 
     public List<Integer> searchPath(int target) {
@@ -79,16 +66,10 @@ public class Q10_BstDirectory {
 
         while (current != null) {
             result.add(current.value);
-
             if (target == current.value) {
                 break;
             }
-
-            if (target < current.value) {
-                current = current.left;
-            } else {
-                current = current.right;
-            }
+            current = target < current.value ? current.left : current.right;
         }
 
         return result;
@@ -96,18 +77,17 @@ public class Q10_BstDirectory {
 
     public List<Integer> inorder() {
         List<Integer> result = new ArrayList<>();
-        inorderRecursive(root, result);
+        inorder(root, result);
         return result;
     }
 
-    private void inorderRecursive(Node node, List<Integer> result) {
+    private void inorder(Node node, List<Integer> result) {
         if (node == null) {
             return;
         }
-
-        inorderRecursive(node.left, result);
+        inorder(node.left, result);
         result.add(node.value);
-        inorderRecursive(node.right, result);
+        inorder(node.right, result);
     }
 
     public boolean isValid() {
@@ -118,15 +98,12 @@ public class Q10_BstDirectory {
         if (node == null) {
             return true;
         }
-
         if (low != null && node.value <= low) {
             return false;
         }
-
         if (high != null && node.value >= high) {
             return false;
         }
-
         return isValid(node.left, low, node.value)
                 && isValid(node.right, node.value, high);
     }

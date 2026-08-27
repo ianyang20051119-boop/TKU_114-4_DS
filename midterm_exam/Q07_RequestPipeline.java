@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.List;
 
 public class Q07_RequestPipeline {
-
     public static boolean isBalanced(String text) {
         if (text == null) {
             return false;
@@ -12,19 +11,18 @@ public class Q07_RequestPipeline {
 
         Deque<Character> stack = new ArrayDeque<>();
 
-        for (char c : text.toCharArray()) {
-            if (c == '(' || c == '[' || c == '{') {
-                stack.push(c);
-            } else if (c == ')' || c == ']' || c == '}') {
+        for (char ch : text.toCharArray()) {
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);
+            } else if (ch == ')' || ch == ']' || ch == '}') {
                 if (stack.isEmpty()) {
                     return false;
                 }
 
-                char top = stack.pop();
-
-                if ((c == ')' && top != '(')
-                        || (c == ']' && top != '[')
-                        || (c == '}' && top != '{')) {
+                char open = stack.pop();
+                if ((ch == ')' && open != '(')
+                        || (ch == ']' && open != '[')
+                        || (ch == '}' && open != '{')) {
                     return false;
                 }
             }
@@ -33,40 +31,40 @@ public class Q07_RequestPipeline {
         return stack.isEmpty();
     }
 
+    private static String takeUrgentCheckpoint(Deque<String> urgent) {
+        return urgent.removeFirst();
+    }
+
     public static List<String> process(String[] commands) {
         List<String> result = new ArrayList<>();
-
         if (commands == null) {
             return result;
         }
 
-        Deque<String> normalQueue = new ArrayDeque<>();
-        Deque<String> urgentQueue = new ArrayDeque<>();
+        Deque<String> normal = new ArrayDeque<>();
+        Deque<String> urgent = new ArrayDeque<>();
 
         for (String command : commands) {
-            if (command == null || command.trim().isEmpty()) {
+            if (command == null) {
                 continue;
             }
 
-            String[] parts = command.trim().split("\\s+");
-
-            if (parts.length != 2 && parts.length != 1) {
+            String trimmed = command.trim();
+            if (trimmed.isEmpty()) {
                 continue;
             }
 
-            String type = parts[0];
+            String[] parts = trimmed.split("\\s+");
 
-            if (type.equals("NORMAL") && parts.length == 2
-                    && !parts[1].isEmpty()) {
-                normalQueue.offer(parts[1]);
-            } else if (type.equals("URGENT") && parts.length == 2
-                    && !parts[1].isEmpty()) {
-                urgentQueue.offer(parts[1]);
-            } else if (type.equals("PROCESS") && parts.length == 1) {
-                if (!urgentQueue.isEmpty()) {
-                    result.add(takeUrgentCheckpoint(urgentQueue));
-                } else if (!normalQueue.isEmpty()) {
-                    result.add(normalQueue.poll());
+            if (parts.length == 2 && parts[0].equals("NORMAL") && !parts[1].isEmpty()) {
+                normal.addLast(parts[1]);
+            } else if (parts.length == 2 && parts[0].equals("URGENT") && !parts[1].isEmpty()) {
+                urgent.addLast(parts[1]);
+            } else if (parts.length == 1 && parts[0].equals("PROCESS")) {
+                if (!urgent.isEmpty()) {
+                    result.add(takeUrgentCheckpoint(urgent));
+                } else if (!normal.isEmpty()) {
+                    result.add(normal.removeFirst());
                 } else {
                     result.add("EMPTY");
                 }
@@ -74,9 +72,5 @@ public class Q07_RequestPipeline {
         }
 
         return result;
-    }
-
-    private static String takeUrgentCheckpoint(Deque<String> urgentQueue) {
-        return urgentQueue.poll();
     }
 }
