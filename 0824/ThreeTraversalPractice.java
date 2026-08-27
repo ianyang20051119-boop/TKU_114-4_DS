@@ -63,4 +63,4 @@ public class ThreeTraversalPractice {
         postorder(root);
         System.out.println();
     }
-}
+}   
